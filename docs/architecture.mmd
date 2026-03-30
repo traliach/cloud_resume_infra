@@ -1,0 +1,44 @@
+flowchart TD
+    User(["👤 Visitor\nresume.achille.tech"])
+    Vercel["🌐 Vercel DNS\nCNAME → CloudFront"]
+    CF["☁️ CloudFront CDN\nHTTPS · Edge Cache\nOAC · TLSv1.2"]
+    ACM["🔒 ACM Certificate\nus-east-1\nresume.achille.tech"]
+    S3["🪣 S3 Bucket\nresume.achille.tech\nPrivate · Versioned · Encrypted"]
+    APIGW["⚡ API Gateway\nHTTP API\nGET /count\nCORS: resume.achille.tech"]
+    Lambda["λ Lambda\nPython 3.12\nvisitor-counter"]
+    DynamoDB[("🗄️ DynamoDB\ncloud-resume-visitors\nPAY_PER_REQUEST")]
+    IAM["🔑 IAM Role\nGetItem · UpdateItem\nLeast Privilege"]
+    TFState["🪣 S3 State Bucket\nachille-tf-state\nTerraform Backend"]
+    GHA["⚙️ GitHub Actions\nci.yml · deploy.yml"]
+    Terraform["🏗️ Terraform\n20 resources\nplan → apply"]
+
+    User -->|"HTTPS request"| Vercel
+    Vercel -->|"CNAME"| CF
+    CF -->|"Validates TLS"| ACM
+    CF -->|"OAC · sigv4"| S3
+    User -->|"fetch /count"| APIGW
+    APIGW -->|"Lambda proxy"| Lambda
+    Lambda -->|"ADD visit_count"| DynamoDB
+    Lambda -->|"assumes"| IAM
+    IAM -->|"scoped to"| DynamoDB
+    GHA -->|"terraform apply"| Terraform
+    Terraform -->|"state"| TFState
+    Terraform -->|"provisions"| CF
+    Terraform -->|"provisions"| S3
+    Terraform -->|"provisions"| Lambda
+    Terraform -->|"provisions"| DynamoDB
+    Terraform -->|"provisions"| APIGW
+    GHA -->|"s3 sync + invalidate"| CF
+
+    style User fill:#1A7A8A,color:#fff,stroke:#1A7A8A
+    style CF fill:#FF9900,color:#fff,stroke:#FF9900
+    style S3 fill:#3F8624,color:#fff,stroke:#3F8624
+    style Lambda fill:#FF9900,color:#fff,stroke:#FF9900
+    style DynamoDB fill:#3F8624,color:#fff,stroke:#3F8624
+    style APIGW fill:#FF9900,color:#fff,stroke:#FF9900
+    style ACM fill:#DD344C,color:#fff,stroke:#DD344C
+    style IAM fill:#DD344C,color:#fff,stroke:#DD344C
+    style TFState fill:#3F8624,color:#fff,stroke:#3F8624
+    style GHA fill:#24292E,color:#fff,stroke:#24292E
+    style Terraform fill:#7B42BC,color:#fff,stroke:#7B42BC
+    style Vercel fill:#000,color:#fff,stroke:#000
