@@ -21,7 +21,7 @@ coverage/
 *.tfstate.backup
 *.tfvars
 !*.tfvars.example
-.terraform.lock.hcl
+# .terraform.lock.hcl is intentionally tracked (pins provider versions)
 
 # OS
 .DS_Store
