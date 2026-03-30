@@ -14,7 +14,8 @@ resource "aws_lambda_function" "visitor_counter" {
 
   environment {
     variables = {
-      TABLE_NAME = aws_dynamodb_table.visitor_counter.name
+      TABLE_NAME     = aws_dynamodb_table.visitor_counter.name
+      ALLOWED_ORIGIN = var.resume_subdomain
     }
   }
 }
