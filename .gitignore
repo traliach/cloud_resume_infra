@@ -42,3 +42,11 @@ yarn-error.log*
 # Testing
 coverage/
 .nyc_output/
+
+# Lambda build artifacts
+lambda/*.zip
+lambda/__pycache__/
+lambda/tests/__pycache__/
+
+# Private working notes
+interview.md
