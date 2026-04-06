@@ -82,7 +82,7 @@ jobs:
           path: achille.dev
 
       - name: Setup Node
-        uses: actions/setup-node@v4.1.0
+        uses: actions/setup-node@v6.3.0
         with:
           node-version: "24"
 
