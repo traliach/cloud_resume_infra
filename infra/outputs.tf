@@ -18,6 +18,11 @@ output "api_endpoint" {
   value       = "${aws_apigatewayv2_stage.visitor_counter.invoke_url}/count"
 }
 
+output "lambda_alerts_topic_arn" {
+  description = "SNS topic ARN for Lambda alarm notifications"
+  value       = aws_sns_topic.lambda_alerts.arn
+}
+
 output "acm_validation_records" {
   description = "Add these CNAME records in Vercel DNS to validate the ACM certificate"
   value = {

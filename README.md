@@ -74,6 +74,7 @@ Edit `infra/variables.tf` or export as env vars:
 ```bash
 export TF_VAR_domain_name="yourdomain.com"
 export TF_VAR_resume_subdomain="resume.yourdomain.com"
+export TF_VAR_alert_email="you@example.com"   # SNS alarm destination
 ```
 
 ### 4. Deploy infrastructure
@@ -149,6 +150,7 @@ terraform apply → checkout frontend → npm install → npm run build → s3 s
 |--------|-------------|
 | `AWS_ACCESS_KEY_ID` | IAM deployer access key |
 | `AWS_SECRET_ACCESS_KEY` | IAM deployer secret key |
+| `TF_VAR_alert_email` | Email address for CloudWatch alarm SNS notifications |
 
 ### Required GitHub variables
 
@@ -180,6 +182,7 @@ cloud-resume-infra/
 │   ├── acm.tf              # ACM certificate (us-east-1) + validation
 │   ├── dynamodb.tf         # visitor counter table
 │   ├── iam.tf              # Lambda execution role, least-privilege policy
+│   ├── alerting.tf         # CloudWatch alarms + SNS topic for Lambda errors
 │   └── lambda.tf           # Lambda function + API Gateway HTTP API
 ├── lambda/
 │   ├── handler.py          # visitor counter — atomic DynamoDB increment
@@ -230,6 +233,49 @@ python -m pytest tests/ -v
 - Lambda IAM role: `GetItem` + `UpdateItem` on one table ARN only
 - CORS: explicit origin, not `*`
 - Terraform state: encrypted at rest in S3 with versioning
+
+---
+
+## Observability
+
+Three CloudWatch alarms monitor the visitor counter Lambda in production. All alarms notify via SNS email and use `treat_missing_data = notBreaching` — silence is not an alert.
+
+| Alarm | Metric | Threshold | Window |
+|-------|--------|-----------|--------|
+| `cloud-resume-lambda-error` | Error rate (errors / invocations × 100) | > 0% | 5 min |
+| `cloud-resume-lambda-duration` | p95 duration | > 3000 ms | 5 min |
+| `cloud-resume-lambda-throttle` | Throttles (sum) | > 0 | 5 min |
+
+### SNS subscription confirmation
+
+After `terraform apply`, AWS sends a confirmation email to `TF_VAR_alert_email`. **You must click the confirmation link** before any alarms will deliver notifications.
+
+```bash
+# Confirm alarms are in CloudWatch after apply
+aws cloudwatch describe-alarms \
+  --alarm-name-prefix "cloud-resume-lambda" \
+  --query "MetricAlarms[].{Name:AlarmName,State:StateValue}"
+```
+
+View alarm state in the AWS Console: **CloudWatch → Alarms → All alarms**, filter by `cloud-resume-lambda`.
+
+---
+
+## Cost
+
+Monthly cost estimate at portfolio traffic levels (~1 000 requests/month):
+
+| Service         | Tier                | Monthly Cost |
+|-----------------|---------------------|--------------|
+| S3              | ~5 MB storage       | ~$0.01       |
+| CloudFront      | ~1 GB transfer      | ~$0.09       |
+| Lambda          | Always free tier    | $0.00        |
+| DynamoDB        | Always free tier    | $0.00        |
+| ACM Certificate | Free                | $0.00        |
+| API Gateway     | ~1 K requests       | ~$0.01       |
+| **Total**       |                     | **~$0.11**   |
+
+> After the 12-month AWS free tier, S3 and CloudFront incur minimal charges at portfolio traffic levels. Lambda and DynamoDB remain always free. Verify against your own [AWS Cost Explorer](https://console.aws.amazon.com/cost-management/home) data.
 
 ---
 
