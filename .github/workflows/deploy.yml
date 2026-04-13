@@ -16,6 +16,7 @@ jobs:
       AWS_DEFAULT_REGION: us-east-1
       TF_VAR_domain_name: ${{ vars.TF_VAR_DOMAIN_NAME }}
       TF_VAR_resume_subdomain: ${{ vars.TF_VAR_RESUME_SUBDOMAIN }}
+      TF_VAR_alert_email: ${{ secrets.TF_VAR_ALERT_EMAIL }}
 
     steps:
       - name: Checkout
