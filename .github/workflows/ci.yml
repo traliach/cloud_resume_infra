@@ -17,13 +17,14 @@ jobs:
       AWS_DEFAULT_REGION: us-east-1
       TF_VAR_domain_name: ${{ vars.TF_VAR_DOMAIN_NAME }}
       TF_VAR_resume_subdomain: ${{ vars.TF_VAR_RESUME_SUBDOMAIN }}
+      TF_VAR_alert_email: ${{ secrets.TF_VAR_ALERT_EMAIL }}
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v6.0.2
 
       - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3.1.2
+        uses: hashicorp/setup-terraform@v4.0.0
 
       - name: Terraform init
         run: terraform init
@@ -42,7 +43,7 @@ jobs:
         working-directory: infra
 
       - name: Upload plan artifact
-        uses: actions/upload-artifact@v4.4.3
+        uses: actions/upload-artifact@v7.0.1
         with:
           name: tfplan
           path: infra/tfplan
@@ -53,10 +54,10 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v6.0.2
 
       - name: Setup Python
-        uses: actions/setup-python@v5.3.0
+        uses: actions/setup-python@v6.2.0
         with:
           python-version: "3.12"
 
@@ -73,16 +74,16 @@ jobs:
 
     steps:
       - name: Checkout infra repo
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v6.0.2
 
       - name: Checkout frontend (achille.dev)
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v6.0.2
         with:
           repository: traliach/achille.dev
           path: achille.dev
 
       - name: Setup Node
-        uses: actions/setup-node@v4.1.0
+        uses: actions/setup-node@v6.3.0
         with:
           node-version: "24"
 

@@ -20,10 +20,10 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v6.0.2
 
       - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3.1.2
+        uses: hashicorp/setup-terraform@v4.0.0
         with:
           terraform_wrapper: false
 
@@ -36,13 +36,13 @@ jobs:
         working-directory: infra
 
       - name: Checkout frontend (achille.dev)
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v6.0.2
         with:
           repository: traliach/achille.dev
           path: achille.dev
 
       - name: Setup Node
-        uses: actions/setup-node@v4.1.0
+        uses: actions/setup-node@v6.3.0
         with:
           node-version: "24"
 
