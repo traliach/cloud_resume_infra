@@ -263,19 +263,19 @@ View alarm state in the AWS Console: **CloudWatch → Alarms → All alarms**, f
 
 ## Cost
 
-Monthly cost estimate at portfolio traffic levels (~1 000 requests/month):
+Actual cost for March 2026 pulled from AWS Cost Explorer (`aws ce get-cost-and-usage`):
 
-| Service         | Tier                | Monthly Cost |
-|-----------------|---------------------|--------------|
-| S3              | ~5 MB storage       | ~$0.01       |
-| CloudFront      | ~1 GB transfer      | ~$0.09       |
-| Lambda          | Always free tier    | $0.00        |
-| DynamoDB        | Always free tier    | $0.00        |
-| ACM Certificate | Free                | $0.00        |
-| API Gateway     | ~1 K requests       | ~$0.01       |
-| **Total**       |                     | **~$0.11**   |
+| Service                   | Actual (March 2026) |
+|---------------------------|---------------------|
+| Amazon Simple Storage Service | $0.00 (< $0.000001) |
+| Amazon CloudFront         | $0.00 (< $0.000001) |
+| AWS Lambda                | $0.00               |
+| Amazon DynamoDB           | $0.00               |
+| AWS Certificate Manager   | $0.00               |
+| Amazon API Gateway        | $0.00               |
+| **Total**                 | **$0.00**           |
 
-> After the 12-month AWS free tier, S3 and CloudFront incur minimal charges at portfolio traffic levels. Lambda and DynamoDB remain always free. Verify against your own [AWS Cost Explorer](https://console.aws.amazon.com/cost-management/home) data.
+> All services are within AWS free tier limits at portfolio traffic levels. S3 and CloudFront recorded sub-cent fractions ($0.0000000047 and $0.0000000001 respectively) — effectively free. Lambda, DynamoDB, ACM, and API Gateway incurred no charge at all.
 
 ---
 
